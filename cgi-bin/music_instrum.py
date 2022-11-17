@@ -26,6 +26,7 @@ template = '''
                 </tr>
                 {rows_html}
             </table>
+             <a class="h3 link-primary" href="/cgi-bin/classXml.py" download="classes.xml">Выгрузить XML</a>
         </body>
     </html>
 '''

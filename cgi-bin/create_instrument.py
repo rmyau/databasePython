@@ -7,7 +7,7 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0, parentdir)
 import BD as bd
-
+from lxml import etree as ET
 msg = ''
 form = cgi.FieldStorage()
 instr = form.getfirst("instrum")
@@ -22,6 +22,33 @@ if (class_id is not None) and (instr is not None):
                 </div>
             </div>
         '''
+
+instrum_xml = form.getfirst("xml_file")
+
+if instrum_xml is not None:
+    root = ET.fromstring(instrum_xml.decode("utf-8"))
+    success_cnt = 0
+    for child in root:
+        instrument = {}
+        for a_ch in child:
+            if a_ch.tag == 'name_instrum':
+                instrument['name_instrum'] = a_ch.text
+            if a_ch.tag == 'name_class':
+                instrument['name_class'] = a_ch.text
+        if ('name_instrum' in instrument) and ('name_class' in instrument):
+            bd.addInstrum(bd.getIndexClass(instrument['name_class']), instrument['name_instrum'])
+            success_cnt += 1
+
+    msg = f'''
+        <br>
+        <div class="card">
+            <div class="card-body">
+                Успешно загружено {success_cnt} инструментов
+            </div>
+        </div>
+    '''
+
+
 classes = bd.getAllClass()
 template = '''
     <!DOCTYPE html>
@@ -50,6 +77,16 @@ template = '''
                 </form>
                 {msg}
             </div>
+            
+            <h1>Загрузить из XML</h1>
+             <div class="ps-4 pe-4">
+                <form method="post" enctype="multipart/form-data">
+                    <label class="form-label" for="xml_file">XML Файл</label>
+                    <input class="form-control" name="xml_file" type="file" accept=".xml">
+                    <br>
+                    <input type="submit" class="btn btn-primary">
+                </form>
+             </div>
         </body>
     </html>
 '''

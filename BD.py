@@ -66,5 +66,15 @@ def addMusician(instrum_id, musician):
 def addInstrum(class_id, instrum_name):
     sel = ''' INSERT INTO instrument(id_class, name_instrum) VALUES (?,?)'''
     execute_insert_commit(sel, (class_id, instrum_name))
+def getIndexClass(name_class):
+    sql = ' SELECT id_class FROM class where name_class=?'
+    print(sql)
+    cur = sql_con.cursor()
+    cur.execute(sql,(name_class,))
+    data = cur.fetchall()
+    cur.close()
+    print(data)
+    return data[0][0]
+
 
 
